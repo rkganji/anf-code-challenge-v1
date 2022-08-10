@@ -240,7 +240,7 @@
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Page Content"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    components="[group:ANF Code Challenge - Content,/apps/anf-code-challenge/components/form/container]">
+                    components="[group:ANF Code Challenge - Content,/apps/anf-code-challenge/components/form/container,/apps/anf-code-challenge/components/form/userform]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                     <cq:authoring jcr:primaryType="nt:unstructured">
                         <assetToComponentMapping jcr:primaryType="nt:unstructured">
