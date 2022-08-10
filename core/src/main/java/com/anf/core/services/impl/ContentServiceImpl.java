@@ -216,6 +216,12 @@ public class ContentServiceImpl implements ContentService {
         ResourceResolver resolver = request.getResourceResolver();
         Iterator<Resource> result = resolver.findResources(queryString, javax.jcr.query.Query.JCR_SQL2);
 
+        // Alternatively this can be done using QueryManager API as well like shown below:
+        // Workspace workspace = session.getWorkspace();
+        // QueryManager queryManager = workspace.getQueryManager();
+        // Query query = queryManager.createQuery("{JCR-SQL2 query}", Query.JCR_SQL2);
+        // QueryResult result = query.execute();
+
         List<String> pagePaths = new ArrayList<>();
         result.forEachRemaining(resource -> pagePaths.add(resource.getPath()));
 
