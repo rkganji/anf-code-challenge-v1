@@ -1,0 +1,28 @@
+Requirement: 
+	Fetch the first 10 pages under the path /content/anf-code-challenge/us/en where property anfCodeChallenge exists under the page node.
+	
+Query Builder API
+-----------------
+
+path=/content/anf-code-challenge/us/en
+type=cq:Page
+1_property=jcr:content/anfCodeChallenge
+1_property.value=true
+p.limit=10
+
+XPath
+-----
+
+/jcr:root/content/anf-code-challenge/us/en//element(*, cq:Page)
+[
+(jcr:content/@anfCodeChallenge = 'true') 
+]
+
+JCR-SQL2
+--------
+
+SELECT parent.* FROM [cq:Page] AS parent 
+INNER JOIN [nt:base] AS child ON ISCHILDNODE(child,parent) 
+WHERE ISDESCENDANTNODE(parent, '/content/anf-code-challenge/us/en') AND child.[anfCodeChallenge] = 'true'
+
+Note: Limit is not possible on the query itself but can be set via API
