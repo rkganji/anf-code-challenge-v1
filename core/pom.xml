@@ -77,6 +77,23 @@ Import-Package: javax.annotation;version=0.0.0,*
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.6</version>
+                                  
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals><goal>prepare-agent</goal></goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals><goal>report</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 	<dependencyManagement>
@@ -170,6 +187,12 @@ Import-Package: javax.annotation;version=0.0.0,*
 			<artifactId>lombok</artifactId>
 			<version>1.18.24</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.sling</groupId>
+		    <artifactId>org.apache.sling.resource.filter</artifactId>
+		    <version>1.0.0</version>
+		    <scope>provided</scope>
 		</dependency>
         <!-- Testing -->
         <dependency>
