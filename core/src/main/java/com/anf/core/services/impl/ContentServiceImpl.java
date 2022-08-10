@@ -1,12 +1,21 @@
 package com.anf.core.services.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -20,6 +29,10 @@ import com.anf.core.error.ErrorCode;
 import com.anf.core.model.AgeConfig;
 import com.anf.core.model.User;
 import com.anf.core.services.ContentService;
+import com.day.cq.search.PredicateGroup;
+import com.day.cq.search.Query;
+import com.day.cq.search.QueryBuilder;
+import com.day.cq.search.result.SearchResult;
 
 import lombok.extern.log4j.Log4j;
 
@@ -146,6 +159,67 @@ public class ContentServiceImpl implements ContentService {
 
         // save changes
         session.save();
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see com.anf.core.services.ContentService#getExercise3PagesUsingQueryBuilder(org.apache.sling.api.SlingHttpServletRequest)
+     */
+    @Override
+    public List<String> getExercise3PagesUsingQueryBuilder(final SlingHttpServletRequest request)
+            throws RepositoryException {
+
+        // create query description as hash map (simplest way, same as form
+        // post)
+        Map<String, String> map = new HashMap<>();
+        map.put("path", "/content");
+        map.put("type", "cq:Page");
+        map.put("1_property", "jcr:content/anfCodeChallenge");
+        map.put("1_property.value", "true");
+        map.put("p.limit", "10");
+
+        final QueryBuilder queryBuilder = request.getResourceResolver()
+                .adaptTo(QueryBuilder.class);
+        final Session session = request.getResourceResolver()
+                .adaptTo(Session.class);
+
+        // create query and execute
+        final Query query = queryBuilder.createQuery(PredicateGroup.create(map), session);
+        final SearchResult result = query.getResult();
+
+        Node resultNode = null;
+        List<String> pagePaths = new ArrayList<>();
+        
+        // iterate through results and consolidate page paths
+        if (null != result) {
+            final Iterator<Node> nodeItr = result.getNodes();
+            while (nodeItr.hasNext()) {
+                resultNode = nodeItr.next();
+                pagePaths.add(resultNode.getPath());
+            }
+        }
+
+        return pagePaths;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see com.anf.core.services.ContentService#getExercise3PagesUsingSQL2(org.apache.sling.api.SlingHttpServletRequest)
+     */
+    @Override
+    public List<String> getExercise3PagesUsingSQL2(final SlingHttpServletRequest request) {
+
+        final String queryString = "SELECT parent.* FROM [cq:Page] AS parent \n"
+                + "INNER JOIN [nt:base] AS child ON ISCHILDNODE(child,parent) \n"
+                + "WHERE ISDESCENDANTNODE(parent, '/content/anf-code-challenge/us/en') AND child.[anfCodeChallenge] = 'true'";
+
+        ResourceResolver resolver = request.getResourceResolver();
+        Iterator<Resource> result = resolver.findResources(queryString, javax.jcr.query.Query.JCR_SQL2);
+
+        List<String> pagePaths = new ArrayList<>();
+        result.forEachRemaining(resource -> pagePaths.add(resource.getPath()));
+
+        return pagePaths;
     }
 
 }

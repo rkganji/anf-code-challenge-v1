@@ -1,7 +1,10 @@
 package com.anf.core.services;
 
+import java.util.List;
+
 import javax.jcr.RepositoryException;
 
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.LoginException;
 
 import com.anf.core.model.User;
@@ -21,4 +24,8 @@ public interface ContentService {
      *             session
      */
     void commitUserDetails(User user) throws RepositoryException, LoginException;
+    
+    List<String> getExercise3PagesUsingQueryBuilder(final SlingHttpServletRequest request) throws RepositoryException;
+    
+    List<String> getExercise3PagesUsingSQL2(final SlingHttpServletRequest request);
 }
