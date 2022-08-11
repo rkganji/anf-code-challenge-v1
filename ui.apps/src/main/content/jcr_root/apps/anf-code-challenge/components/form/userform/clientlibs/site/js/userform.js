@@ -14,39 +14,32 @@
  * limitations under the License.
  ******************************************************************************/
 (function($) {
-    "use strict";
+	"use strict";
 
+	$("#userform").submit(function(e) {
 
+		e.preventDefault(); // avoid to execute the actual submit of the form.
 
-    $("#userform").submit(function(e) {
+		// hide previous messages
+		$("#error-message").hide();
+		$("#success-message").hide();
 
-        e.preventDefault(); // avoid to execute the actual submit of the form.
+		var form = $(this);
+		var actionUrl = form.attr('action');
 
-                              $("#error-message").hide();
-                      $("#success-message").hide();
+		$.ajax({
+			type : "POST",
+			url : actionUrl,
+			data : form.serialize(), // serializes the form's elements.
+			success : function(data) {
+				$("#success-message").show();
+			},
+			error : function(data) {
+				$("#error-message").text(data.responseJSON.message);
+				$("#error-message").show();
+			}
+		});
 
-    
-        var form = $(this);
-        var actionUrl = form.attr('action');
-        
-        $.ajax({
-            type: "POST",
-            url: actionUrl,
-            data: form.serialize(), // serializes the form's elements.
-            success: function(data)
-            {
-
-              $("#success-message").show();
-            },
-            error: function(data)
-            {
-                console.log(data.responseJSON.message);
-              $("#error-message").text(data.responseJSON.message);
-              $("#error-message").show();
-            }
-    });
-    
-});
-
+	});
 
 })(jQuery);
